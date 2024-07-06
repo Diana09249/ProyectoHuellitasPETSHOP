@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Button } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../credenciales';
@@ -14,7 +15,8 @@ export default function RegisterScreen({ navigation }) {
   const [docType, setDocType] = useState('DNI');
   const [docNumber, setDocNumber] = useState('');
   const [age, setAge] = useState('');
-  const [birthDate, setBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [address, setAddress] = useState('');
   const [error, setError] = useState('');
 
@@ -36,7 +38,7 @@ export default function RegisterScreen({ navigation }) {
         docType,
         docNumber,
         age,
-        birthDate,
+        birthDate: birthDate.toISOString().split('T')[0],
         address,
       });
 
@@ -46,6 +48,12 @@ export default function RegisterScreen({ navigation }) {
       console.log(error);
       setError(error.message);
     }
+  };
+
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate || birthDate;
+    setShowDatePicker(false);
+    setBirthDate(currentDate);
   };
 
   return (
@@ -70,7 +78,20 @@ export default function RegisterScreen({ navigation }) {
 
       <TextInput style={styles.input} placeholder="Document Number" value={docNumber} onChangeText={setDocNumber} />
       <TextInput style={styles.input} placeholder="Age" value={age} onChangeText={setAge} />
-      <TextInput style={styles.input} placeholder="Birth Date" value={birthDate} onChangeText={setBirthDate} />
+
+      <View>
+        <Button onPress={() => setShowDatePicker(true)} title="Select Birth Date" />
+        {showDatePicker && (
+          <DateTimePicker
+            value={birthDate}
+            mode="date"
+            display="default"
+            onChange={onChangeDate}
+          />
+        )}
+      </View>
+      <Text style={styles.dateText}>Selected Date: {birthDate.toDateString()}</Text>
+
       <TextInput style={styles.input} placeholder="Address" value={address} onChangeText={setAddress} />
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
@@ -109,5 +130,10 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     marginBottom: 12,
+  },
+  dateText: {
+    marginTop: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
 });
