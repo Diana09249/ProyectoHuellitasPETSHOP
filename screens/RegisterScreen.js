@@ -40,7 +40,7 @@ export default function RegisterScreen({ navigation }) {
         address,
       });
 
-      Alert.alert('Registration Successful', 'You have registered successfully!');
+      Alert.alert('Te has registrado en HuellitaPetShop', 'Te has registrado correctamente!');
       navigation.navigate('Login');
     } catch (error) {
       console.log(error);
