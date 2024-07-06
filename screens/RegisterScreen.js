@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, setDoc, doc } from 'firebase/firestore';
 import { auth } from '../credenciales';
@@ -13,7 +14,7 @@ export default function RegisterScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
-  const [docType, setDocType] = useState('');
+  const [docType, setDocType] = useState('DNI');  // Default to 'DNI'
   const [docNumber, setDocNumber] = useState('');
   const [age, setAge] = useState('');
   const [birthDate, setBirthDate] = useState('');
@@ -58,7 +59,17 @@ export default function RegisterScreen({ navigation }) {
       <TextInput style={styles.input} placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
       <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
       <TextInput style={styles.input} placeholder="Full Name" value={fullName} onChangeText={setFullName} />
-      <TextInput style={styles.input} placeholder="Document Type" value={docType} onChangeText={setDocType} />
+      
+      <Picker
+        selectedValue={docType}
+        onValueChange={(itemValue) => setDocType(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="DNI" value="DNI" />
+        <Picker.Item label="PASAPORTE" value="PASAPORTE" />
+        <Picker.Item label="RUC" value="RUC" />
+      </Picker>
+      
       <TextInput style={styles.input} placeholder="Document Number" value={docNumber} onChangeText={setDocNumber} />
       <TextInput style={styles.input} placeholder="Age" value={age} onChangeText={setAge} />
       <TextInput style={styles.input} placeholder="Birth Date" value={birthDate} onChangeText={setBirthDate} />
@@ -82,6 +93,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+  },
+  picker: {
+    height: 50,
+    marginBottom: 12,
   },
   button: {
     backgroundColor: '#525FE1',
