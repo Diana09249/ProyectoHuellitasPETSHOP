@@ -1,10 +1,10 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// credenciales.js
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
-// Your web app's Firebase configuration
+// Tu configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAqIzFeF3Js2NIuTb6loc-MfibyYWuQPuQ",
   authDomain: "proyectohuellitasapp.firebaseapp.com",
@@ -15,19 +15,10 @@ const firebaseConfig = {
   measurementId: "G-P8VY6P0B0G"
 };
 
-// Initialize Firebase
+// Inicializa Firebase
 const appFirebase = initializeApp(firebaseConfig);
-
-// Initialize Firebase Auth with AsyncStorage
-const auth = initializeAuth(appFirebase, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
-
-// Initialize Firebase Analytics
-const analytics = getAnalytics(appFirebase);
-
-// Initialize Firestore
+const auth = getAuth(appFirebase);
 const db = getFirestore(appFirebase);
+const storage = getStorage(appFirebase);  // Agregar esta línea
 
-export default appFirebase;
-export { auth, db };
+export { auth, db, storage };  // Exportar también `storage`

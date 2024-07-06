@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Button } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Button, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { auth, db } from '../credenciales';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, db, storage } from '../credenciales';  // Asegúrate de importar `storage`
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -18,6 +20,7 @@ export default function RegisterScreen({ navigation }) {
   const [birthDate, setBirthDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [address, setAddress] = useState('');
+  const [imageUri, setImageUri] = useState(null);
   const [error, setError] = useState('');
 
   const handleRegister = async () => {
@@ -30,6 +33,16 @@ export default function RegisterScreen({ navigation }) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Subir imagen de perfil a Firebase Storage
+      let photoURL = '';
+      if (imageUri) {
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        const storageRef = ref(storage, `usuarios/${user.uid}/profile.jpg`);
+        await uploadBytes(storageRef, blob);
+        photoURL = await getDownloadURL(storageRef);
+      }
+
       // Guardar datos adicionales en Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email,
@@ -40,9 +53,10 @@ export default function RegisterScreen({ navigation }) {
         age,
         birthDate: birthDate.toISOString().split('T')[0],
         address,
+        photoURL,  // Agregamos la URL de la imagen
       });
 
-      Alert.alert('Te has registrado en HuellitaPetShop', 'Te has registrado correctamente!');
+      Alert.alert('Registration Successful', 'You have registered successfully!');
       navigation.navigate('Login');
     } catch (error) {
       console.log(error);
@@ -56,10 +70,32 @@ export default function RegisterScreen({ navigation }) {
     setBirthDate(currentDate);
   };
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text>Register</Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
+      
+      <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.profileImage} />
+        ) : (
+          <Text>Select Profile Image</Text>
+        )}
+      </TouchableOpacity>
+      
       <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
       <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
       <TextInput style={styles.input} placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
@@ -135,5 +171,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 12,
     textAlign: 'center',
+  },
+  imagePicker: {
+    backgroundColor: '#eeeeee',
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 12,
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
 });
