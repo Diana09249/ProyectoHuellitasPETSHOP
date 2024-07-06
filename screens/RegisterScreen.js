@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Button, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Button, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
@@ -84,88 +84,111 @@ export default function RegisterScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Register</Text>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      
-      <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.profileImage} />
-        ) : (
-          <Text>Select Profile Image</Text>
-        )}
-      </TouchableOpacity>
-      
-      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
-      <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-      <TextInput style={styles.input} placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
-      <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
-      <TextInput style={styles.input} placeholder="Full Name" value={fullName} onChangeText={setFullName} />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.title}>Register</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        
+        <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.profileImage} />
+          ) : (
+            <Text>Select Profile Image</Text>
+          )}
+        </TouchableOpacity>
+        
+        <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
+        <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
+        <TextInput style={styles.input} placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
+        <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
+        <TextInput style={styles.input} placeholder="Full Name" value={fullName} onChangeText={setFullName} />
 
-      <Picker
-        selectedValue={docType}
-        onValueChange={(itemValue) => setDocType(itemValue)}
-        style={styles.picker}
-      >
-        <Picker.Item label="DNI" value="DNI" />
-        <Picker.Item label="PASAPORTE" value="PASAPORTE" />
-        <Picker.Item label="RUC" value="RUC" />
-      </Picker>
+        <Picker
+          selectedValue={docType}
+          onValueChange={(itemValue) => setDocType(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="DNI" value="DNI" />
+          <Picker.Item label="PASAPORTE" value="PASAPORTE" />
+          <Picker.Item label="RUC" value="RUC" />
+        </Picker>
 
-      <TextInput style={styles.input} placeholder="Document Number" value={docNumber} onChangeText={setDocNumber} />
-      <TextInput style={styles.input} placeholder="Age" value={age} onChangeText={setAge} />
+        <TextInput style={styles.input} placeholder="Document Number" value={docNumber} onChangeText={setDocNumber} />
+        <TextInput style={styles.input} placeholder="Age" value={age} onChangeText={setAge} />
 
-      <View>
-        <Button onPress={() => setShowDatePicker(true)} title="Select Birth Date" />
-        {showDatePicker && (
-          <DateTimePicker
-            value={birthDate}
-            mode="date"
-            display="default"
-            onChange={onChangeDate}
-          />
-        )}
-      </View>
-      <Text style={styles.dateText}>Selected Date: {birthDate.toDateString()}</Text>
+        <View>
+          <Button onPress={() => setShowDatePicker(true)} title="Select Birth Date" />
+          {showDatePicker && (
+            <DateTimePicker
+              value={birthDate}
+              mode="date"
+              display="default"
+              onChange={onChangeDate}
+            />
+          )}
+        </View>
+        <Text style={styles.dateText}>Selected Date: {birthDate.toDateString()}</Text>
 
-      <TextInput style={styles.input} placeholder="Address" value={address} onChangeText={setAddress} />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-    </View>
+        <TextInput style={styles.input} placeholder="Address" value={address} onChangeText={setAddress} />
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  scrollContainer: {
     padding: 16,
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: 'gray',
     borderWidth: 1,
+    borderRadius: 10,
     marginBottom: 12,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#ffffff',
   },
   picker: {
     height: 50,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 10,
     marginBottom: 12,
+    backgroundColor: '#ffffff',
   },
   button: {
     backgroundColor: '#525FE1',
     borderRadius: 30,
-    paddingVertical: 20,
+    paddingVertical: 15,
     marginTop: 20,
     alignItems: 'center',
   },
   buttonText: {
     color: 'white',
+    fontSize: 16,
   },
   error: {
     color: 'red',
     marginBottom: 12,
+    textAlign: 'center',
   },
   dateText: {
     marginTop: 8,
