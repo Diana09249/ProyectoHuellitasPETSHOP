@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
-export default function Home({ navigation }) {
+export default function Profile({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
+      <Text style={styles.title}>Profile Screen</Text>
+      <Button
+        title="Edit Profile"
+        onPress={() => {/* Agregar funcionalidad para editar el perfil */}}
+      />
     </View>
   );
 }

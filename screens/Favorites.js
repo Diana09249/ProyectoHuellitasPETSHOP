@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
-export default function Home({ navigation }) {
+export default function Favorites({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
+      <Text style={styles.title}>Favorites Screen</Text>
+      <Button
+        title="View Favorite Items"
+        onPress={() => {/* Agregar funcionalidad para ver los items favoritos */}}
+      />
     </View>
   );
 }
